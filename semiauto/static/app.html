@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset=utf-8>
+<title>Firefox OS Conformance Tests</title>
+
+<script>
+  var ws;
+
+  window.onload = function() {
+    ws = new WebSocket("ws://localhost:6666/tests")
+    ws.onopen = function(e) { console.log("opened"); }
+    ws.onclose = function(e) { console.log("closed"); }
+    ws.onmessage = function(e) { console.log("message:" + e.data); }
+  };
+</script>
+
+<body>
+  <p>hei!</p>
+</body>
