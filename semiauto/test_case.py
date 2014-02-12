@@ -13,6 +13,8 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
 
     def setUp(self):
         super(AsyncTestCase, self).setUp()
+        self.environment = environment.get(InProcessTestEnvironment)
+        self.server = self.environment.server
         self.marionette = None
 
         self.create_marionette()
@@ -21,19 +23,4 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
         if not self.marionette or not self.marionette.session:
             self.marionette = Marionette(
                 bin="/home/ato/dev/gecko/build/desktop-debug/dist/bin/firefox-bin")
-            self.marionette.start_session()
-
-class TestCase(unittest.TestCase):
-    def setUp(self):
-        self.environment = environment.get(InProcessTestEnvironment)
-        self.server = self.environment.server
-        self.marionette = None
-
-        self.create_marionette()
-
-    def create_marionette(self):
-        if not self.marionette:
-            # TODO(ato): Replace this with connection to device
-            self.marionette = Marionette(
-                bin="/Applications/FirefoxNightly.app/Contents/MacOS/firefox")
             self.marionette.start_session()
