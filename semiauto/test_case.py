@@ -8,9 +8,7 @@ from environment import InProcessTestEnvironment
 
 class AsyncTestCase(tornado.testing.AsyncTestCase):
     def __init__(self, *args, **kwargs):
-        self.config = {}
-        self.config["binary"] = kwargs.pop("binary")
-
+        self.config = kwargs.pop("config")
         super(AsyncTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
@@ -23,5 +21,5 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
 
     def create_marionette(self):
         if not self.marionette or not self.marionette.session:
-            self.marionette = Marionette(bin=self.config["binary"])
+            self.marionette = Marionette()
             self.marionette.start_session()

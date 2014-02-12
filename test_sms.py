@@ -3,10 +3,6 @@ from tornado.testing import gen_test
 import semiauto
 
 class TestSms(semiauto.AsyncTestCase):
-    # def test_send_sms(self):
-    #     self.marionette.navigate("http://sny.no/")
-    #     self.assertTrue(True)
-
     @gen_test
     def test_gogogo(self):
         print 'testing'

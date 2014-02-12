@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -11,27 +13,21 @@ import socket
 import sys
 import unittest
 
-try:
-    from tornado import gen
-    from tornado.httpclient import AsyncHTTPClient
-    from tornaod.httpserver import HTTPServer
-    from tornado.simple_httpclient import SimpleAsyncHTTPClient
-    from tornado import netutil
-except ImportError:
-    # These modules are not importable on app engine.  Parts of this
-    # module won't work,  but e.g. LogTrapTestCase and main() will.
-    AsyncHTTPClient = None
-    gen = None
-    HTTPServer = None
-    IOLoop = None
-    netutil = None
-    SimpleAsyncHTTPClient = None
+from tornado import gen
+from tornado import netutil
+from tornado.httpclient import AsyncHTTPClient
 from tornado.log import gen_log
+from tornado.simple_httpclient import SimpleAsyncHTTPClient
 from tornado.stack_context import ExceptionStackContext
 from tornado.util import raise_exc_info, basestring_type
+from tornado.httpserver import HTTPServer
 
-#def main(handler, **kwargs):
-def main(**kwargs):
+def all():
+    # TODO(ato): Implement
+    return unittest.TestSuite()
+
+def run(suite, verbosity=1, quiet=False, failfast=False,
+        catch_break=False, buffer=True):
     """A simple test runner.
 
     This test runner is essentially equivalent to `unittest.main` from
@@ -66,41 +62,6 @@ def main(**kwargs):
 
     """
 
-    from tornado.options import define, options, parse_command_line
-
-    define("exception_on_interrupt", type=bool, default=True,
-           help=("If true (default), ctrl-c raises a KeyboardInterrupt "
-                 "exception.  This prints a stack trace buf cannot interrupt "
-                 "certain operations.  If false, the process is more reliably "
-                 "killed, but does not print a stack trace."))
-
-    # support the same options as unittest's command-line interface
-    define("verbose", type=bool)
-    define("quiet", type=bool)
-    define("failfast", type=bool)
-    define("catch", type=bool)
-    define("buffer", type=bool)
-
-    argv = [sys.argv[0]] + parse_command_line(sys.argv)
-
-    if not options.exception_on_interrupt:
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
-
-    if options.verbose is not None:
-        kwargs["verbosity"] = 2
-    if options.quiet is not None:
-        kwargs["verbosity"] = 0
-    if options.failfast is not None:
-        kwargs["failfast"] = True
-    if options.catch is not None:
-        kwargs["catchbreak"] = True
-    if options.buffer is not None:
-        kwargs["buffer"] = True
-
-    if __name__ == "__main__" and len(argv) == 1:
-        print("No tests specified", file=sys.stderr)
-        sys.exit(1)
-
     try:
         # In order to be able to run tests by their fully-qualified
         # name on the command line without importing all tests here,
@@ -111,21 +72,18 @@ def main(**kwargs):
         # specific test.
 
         # if len(argv) > 1:
-        #     unittest.main(module=None, argv=argv, **kwargs)
+        #     unittest.main(module=None, argv=argv, verbosity=verbosity,
+        #                   failfast=failfast, catchbreak=catch_break,
+        #                   buffer=buffer)
         # else:
-        #     print(argv)
-        #     print(kwargs)
-        #     unittest.main(defaultTest="all", argv=argv, **kwargs)
+        #     unittest.main(defaultTest="all", argv=argv,
+        #                   verbosity=verbosity, failfast=failfast,
+        #                   catchbreak=catch_break, buffer=buffer)
 
-        # tests = unittest.defaultTestLoader.discover(os.curdir)
-        # print(tests)
-        # sys.exit(0)
-
-        suite = unittest.TestSuite()
         import test_sms
-        suite.addTest(test_sms.TestSms("test_gogogo", binary=kwargs.get("binary")))
-        #suite.addTest(MyTestCase("test_sms", binary=kwargs.get("binary")))
+        suite.addTest(test_sms.TestSms("test_gogogo", config={}))
         unittest.TextTestRunner().run(suite)
+
     except SystemExit as e:
         if e.code == 0:
             gen_log.info("PASS")
@@ -133,5 +91,54 @@ def main(**kwargs):
             gen.log.error("FAIL")
         raise
 
-if __name__ == "__main__":
-    main()
+def discover_tests(start, pattern, test_opts=None):
+    from semiauto.loader import TestLoader
+    loader = TestLoader(test_opts)
+    rv = loader.discover(start, pattern)
+    return rv
+
+def main(argv):
+    config = {}
+    prog = "python -m semiauto"
+    indent = " " * len(prog)
+    usage = """\
+usage: %s [-h|--help] [-v|--verbose] [-q|--quiet]
+       %s [-f|--failfast] [-c|--catch] [-b|--buffer]
+       %s [TEST...|discover DIRECTORY [-p|--pattern]]
+
+TEST can be a list of any number of test modules, classes, and test
+modules.
+
+The magic keyword "discover" can be used to autodetect tests according
+to various criteria.  By default it will start looking recursively for
+tests in the current working directory (".").\
+    """ % (prog, indent, indent)
+
+    import optparse
+    parser = optparse.OptionParser(usage=usage)
+    parser.add_option("-v", "--verbose", action="store_true",
+                      dest="verbose", default=False,
+                      help="Verbose output")
+    parser.add_option("-q", "--quiet", action="store_true",
+                      dest="quiet", help="Minimal output")
+    parser.add_option("--failfast", "-f", action="store_true",
+                      dest="failfast", help="Stop on first failure")
+    parser.add_option("--catch", "-c", action="store_true",
+                      help="Catch C-c and display eresults")
+    parser.add_option("--buffer", "-b", action="store_true",
+                      help="Buffer stdout and stderr during test runs")
+    parser.add_option("--pattern", "-p", dest="pattern",
+                      help='Pattern to match tests ("test_*.py" default)')
+
+    opts, args = parser.parse_args(argv[1:])
+    tests = []
+
+    if len(args) >= 1 and args[0] == "discover":
+        tests = discover_tests(
+            args[1:], opts.pattern, config)
+    else:
+        # TODO(ato): Construct test classes and add to tests
+        tests = unittest.TestSuite()
+
+    run(tests, verbosity=2, failfast=opts.failfast, catch_break=opts.catch,
+        buffer=opts.buffer)
