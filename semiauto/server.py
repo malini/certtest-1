@@ -8,6 +8,7 @@ import uuid
 import tornado.websocket
 import tornado.ioloop
 import tornado.httpserver
+from main import main
 
 
 static_dir = os.path.join(os.path.dirname(__file__), "static")
@@ -68,6 +69,7 @@ class TestHandler(tornado.websocket.WebSocketHandler):
     def __init__(self, *args, **kwargs):
         super(TestHandler, self).__init__(*args, **kwargs)
         self.id = uuid.uuid4()
+        self.callback = None
 
     def open(self):
         self.clients.append(self.id)
@@ -89,3 +91,15 @@ class TestHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, payload):
         message = json.loads(payload)
         print("message: %s" % message)
+        if message.get("prompt", None):
+            print message["prompt"]
+            self.callback()
+            #self.callback(message["prompt"])
+
+    def get_user_input(self, question, cb):
+        self.write_message("prompt")
+        self.callback = cb
+
+    def run_tests(self):
+        logger.info("runtest")
+        main(self)

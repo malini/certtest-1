@@ -1,9 +1,24 @@
+import tornado.testing
 import unittest
-
 from marionette import Marionette
 
 import environment
 from environment import InProcessTestEnvironment
+
+
+class AsyncTestCase(tornado.testing.AsyncTestCase):
+    def __init__(self, *args, **kwargs):
+        self.handler = kwargs.pop("handler")
+        super(AsyncTestCase, self).__init__(*args, **kwargs)
+        self.marionette = Marionette()
+
+    def setUp(self):
+        super(AsyncTestCase, self).setUp()
+        self.create_marionette()
+
+    def create_marionette(self):
+        if not self.marionette.session:
+            self.marionette.start_session()
 
 
 class TestCase(unittest.TestCase):
