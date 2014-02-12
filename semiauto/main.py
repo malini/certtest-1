@@ -30,9 +30,8 @@ from tornado.log import gen_log
 from tornado.stack_context import ExceptionStackContext
 from tornado.util import raise_exc_info, basestring_type
 
-#from test_sms import TestSms
-
-def main(handler, **kwargs):
+#def main(handler, **kwargs):
+def main(**kwargs):
     """A simple test runner.
 
     This test runner is essentially equivalent to `unittest.main` from
@@ -47,7 +46,7 @@ def main(handler, **kwargs):
     can be specified.
 
     Projects with many tests may wish to define a test script like
-    ``tornaod/test/runtests.py``.  This script should define a method
+    ``tornado/test/runtests.py``.  This script should define a method
     ``all()`` which returns a test suite and then call
     `tornado.testing.main()`.  Note that even when a test script is
     used, the ``all()`` test suite may be overridden by naming a
@@ -110,8 +109,22 @@ def main(handler, **kwargs):
         # its own test discovery, which is incompatible with
         # auto2to3), so don't set module if we're not asking for a
         # specific test.
+
+        # if len(argv) > 1:
+        #     unittest.main(module=None, argv=argv, **kwargs)
+        # else:
+        #     print(argv)
+        #     print(kwargs)
+        #     unittest.main(defaultTest="all", argv=argv, **kwargs)
+
+        # tests = unittest.defaultTestLoader.discover(os.curdir)
+        # print(tests)
+        # sys.exit(0)
+
         suite = unittest.TestSuite()
-        suite.addTest(MyTestCase("test_navigate", handler=handler))
+        import test_sms
+        suite.addTest(test_sms.TestSms("test_gogogo", binary=kwargs.get("binary")))
+        #suite.addTest(MyTestCase("test_sms", binary=kwargs.get("binary")))
         unittest.TextTestRunner().run(suite)
     except SystemExit as e:
         if e.code == 0:
@@ -119,3 +132,6 @@ def main(handler, **kwargs):
         else:
             gen.log.error("FAIL")
         raise
+
+if __name__ == "__main__":
+    main()

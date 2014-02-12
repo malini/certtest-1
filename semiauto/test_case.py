@@ -8,7 +8,9 @@ from environment import InProcessTestEnvironment
 
 class AsyncTestCase(tornado.testing.AsyncTestCase):
     def __init__(self, *args, **kwargs):
-        # self.handler = kwargs.pop("handler")
+        self.config = {}
+        self.config["binary"] = kwargs.pop("binary")
+
         super(AsyncTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
@@ -21,6 +23,5 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
 
     def create_marionette(self):
         if not self.marionette or not self.marionette.session:
-            self.marionette = Marionette(
-                bin="/home/ato/dev/gecko/build/desktop-debug/dist/bin/firefox-bin")
+            self.marionette = Marionette(bin=self.config["binary"])
             self.marionette.start_session()
