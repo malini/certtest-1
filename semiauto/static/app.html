@@ -9,9 +9,9 @@
     ws = new WebSocket("ws://localhost:6666/tests");
     ws.onopen = function(e) { console.log("opened"); };
     ws.onclose = function(e) { console.log("closed"); };
-    ws.onmessage = function(be) {
+    ws.onmessage = function(e) {
       console.log("message:" + e.data);
-      if (e.Data == "prompt") {
+      if (e.data == "prompt") {
         ws.send(JSON.stringify({"prompt": "some url"}));
       }
     };

@@ -8,6 +8,7 @@ import uuid
 import tornado.websocket
 import tornado.ioloop
 import tornado.httpserver
+from tornado.concurrent import return_future
 from main import main
 
 
@@ -75,6 +76,7 @@ class TestHandler(tornado.websocket.WebSocketHandler):
         self.clients.append(self.id)
         logger.info("Accepted new client: %s" % self.id)
         self.write_message("welcome!")
+        self.run_tests()
 
     def on_close(self):
         self.clients.remove(self.id)
@@ -90,16 +92,18 @@ class TestHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, payload):
         message = json.loads(payload)
-        print("message: %s" % message)
+        print("got user message: %s" % message)
         if message.get("prompt", None):
             print message["prompt"]
-            self.callback()
             #self.callback(message["prompt"])
+            self.callback("asdf")
 
-    def get_user_input(self, question, cb):
+    @return_future
+    def get_user_input(self, question, callback):
         self.write_message("prompt")
-        self.callback = cb
+        import pdb; pdb.set_trace()
+        self.callback = callback
 
     def run_tests(self):
         logger.info("runtest")
-        main(self)
+        main(self) # TODO:<-- this no longer runs the tests
