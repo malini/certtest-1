@@ -1,57 +1,30 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import with_statement
-
-import functools
-import logging
-import os
-import signal
-import socket
 import sys
 import unittest
 
-from tornado import gen
-from tornado import netutil
-from tornado.httpclient import AsyncHTTPClient
-from tornado.log import gen_log
-from tornado.simple_httpclient import SimpleAsyncHTTPClient
-from tornado.stack_context import ExceptionStackContext
-from tornado.util import raise_exc_info, basestring_type
-from tornado.httpserver import HTTPServer
+from semiauto.loader import TestLoader
 
-def all():
-    # TODO(ato): Implement
-    return unittest.TestSuite()
+test_loader = None
 
 def run(suite, verbosity=1, quiet=False, failfast=False,
-        catch_break=False, buffer=True):
+        catch_break=False, buffer=True, **kwargs):
     """A simple test runner.
 
     This test runner is essentially equivalent to `unittest.main` from
-    the standard library, but adds support for tornado-style option
-    parsing and log formatting.
+    tests in the standard library, but adds support for loading test
+    classes with extra keyword arguments.
 
     The easiest way to run a test is via the command line::
 
-        python -m tornado.testing tornado.test.stack_context_test
+        python -m semiauto test_sms
 
     See the standard library unittest module for ways in which tests
     can be specified.
 
-    Projects with many tests may wish to define a test script like
-    ``tornado/test/runtests.py``.  This script should define a method
-    ``all()`` which returns a test suite and then call
-    `tornado.testing.main()`.  Note that even when a test script is
-    used, the ``all()`` test suite may be overridden by naming a
-    single test on the command line::
+    For example it is possible to automatically discover tests::
 
-        # Runs all tests
-        python -m tornado.test.runtests
-        # Runs one test
-        python -m tornado.test.runtests tornado.test.stack_context_test
+        pyton -m semiauto discover .
 
     Additional keywords arguments passed through to
     ``unittest.main()``.  For example, use
@@ -62,28 +35,18 @@ def run(suite, verbosity=1, quiet=False, failfast=False,
 
     """
 
+    if catch_break:
+        import unittest.signals
+        unittest.signals.installHandler()
+
+    import unittest
+    test_runner = unittest.TextTestRunner(verbosity=verbosity,
+                                          failfast=failfast,
+                                          buffer=buffer,
+                                          **kwargs)
+
     try:
-        # In order to be able to run tests by their fully-qualified
-        # name on the command line without importing all tests here,
-        # module must be set to None.  Python 3.2's unittest.main
-        # ignores defaultTest if no module is given (it tries to do
-        # its own test discovery, which is incompatible with
-        # auto2to3), so don't set module if we're not asking for a
-        # specific test.
-
-        # if len(argv) > 1:
-        #     unittest.main(module=None, argv=argv, verbosity=verbosity,
-        #                   failfast=failfast, catchbreak=catch_break,
-        #                   buffer=buffer)
-        # else:
-        #     unittest.main(defaultTest="all", argv=argv,
-        #                   verbosity=verbosity, failfast=failfast,
-        #                   catchbreak=catch_break, buffer=buffer)
-
-        import test_sms
-        suite.addTest(test_sms.TestSms("test_gogogo", config={}))
-        unittest.TextTestRunner().run(suite)
-
+        results = test_runner.run(suite)
     except SystemExit as e:
         if e.code == 0:
             gen_log.info("PASS")
@@ -91,14 +54,11 @@ def run(suite, verbosity=1, quiet=False, failfast=False,
             gen.log.error("FAIL")
         raise
 
-def discover_tests(start, pattern, test_opts=None):
-    from semiauto.loader import TestLoader
-    loader = TestLoader(test_opts)
-    rv = loader.discover(start, pattern)
-    return rv
+    return results
 
 def main(argv):
     config = {}
+    test_loader = TestLoader({"config": config})
     prog = "python -m semiauto"
     indent = " " * len(prog)
     usage = """\
@@ -134,11 +94,19 @@ tests in the current working directory (".").\
     tests = []
 
     if len(args) >= 1 and args[0] == "discover":
-        tests = discover_tests(
-            args[1:], opts.pattern, config)
+        start_dir = args[1] if len(args) > 1 else "."
+        tests = test_loader.discover(start_dir, opts.pattern or "test_*.py")
     else:
-        # TODO(ato): Construct test classes and add to tests
-        tests = unittest.TestSuite()
+        tests = None
+        if len(args) > 0:
+            test_names = args
+            tests = test_loader.loadTestsFromNames(test_names, None)
+        else:
+            tests = unittest.TestSuite()
 
-    run(tests, verbosity=2, failfast=opts.failfast, catch_break=opts.catch,
-        buffer=opts.buffer)
+    results = run(tests,
+                  verbosity=2 if opts.verbose else 1,
+                  failfast=opts.failfast,
+                  catch_break=opts.catch,
+                  buffer=opts.buffer)
+    sys.exit(not results.wasSuccessful())

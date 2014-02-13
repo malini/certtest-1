@@ -1,6 +1,6 @@
 import unittest
 
-class TestLoader(object):
+class TestLoader(unittest.loader.TestLoader):
     """Loads tests according to various criteria and returns them wrapped
     in `unittest.TestSuite`.
 
@@ -9,13 +9,24 @@ class TestLoader(object):
 
     """
 
-    def __init__(self, forwarding_opts=None):
-        self.opts = forwarding_opts
+    def __init__(self, extra_kwargs=None):
+        super(TestLoader, self).__init__()
+        self.opts = extra_kwargs
 
-    def discover(self, start_dir, pattern="test_*.py"):
-        tests = list(self._find_tests(start_dir, pattern))
-        suite = unittest.TestSuite(tests)
-        return suite
+    def loadTestsFromTestCase(self, klass):
+        """Return a suite of all tests cases contained in ``klass``."""
 
-    def _find_tests(self, start_dir, pattern):
-        return []
+        if issubclass(klass, unittest.suite.TestSuite):
+            raise TypeError("Test cases should not be derived from TestSuite")
+        tc_names = super(TestLoader, self).getTestCaseNames(klass)
+        if not tc_names and hasattr(klass, "runTest"):
+            tc_names = ["runTest"]
+        loaded_suite = super(TestLoader, self).suiteClass(
+            map(self.class_wrapper(klass), tc_names))
+        return loaded_suite
+
+    def class_wrapper(self, klass):
+        def rv(*args, **kwargs):
+            kwargs = dict(self.opts.items() + kwargs.items())
+            return klass(*args, **kwargs)
+        return rv
