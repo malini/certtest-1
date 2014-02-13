@@ -4,7 +4,7 @@ from optparse import OptionParser
 
 
 def main(options):
-    # push the certtest app
+    print "pushing CertTest app to device"
     dm = None
     if options.adb_path:
         dm = mozdevice.DeviceManagerADB(adbPath=options.adb_path)
@@ -12,11 +12,13 @@ def main(options):
         dm = mozdevice.DeviceManagerADB()
     dm.pushFile("certtest_app.zip", "/data/local/certtest_app.zip")
     # forward the marionette port
+    print "forwarding marionette port"
     ret = dm.forward("tcp:2828", "tcp:2828")
     if ret != 0:
         #TODO: right thing here is to keep trying local ports and pass that value in our config
         raise Exception("Can't use localhost:2828 for port forwarding. Is something else using port 2828?")
     # install the app
+    print "installing the app"
     f = open("app_install.js", "r")
     script = f.read()
     f.close()
