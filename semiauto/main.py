@@ -3,8 +3,6 @@
 import sys
 import unittest
 
-from semiauto.loader import TestLoader
-
 test_loader = None
 
 def run(suite, verbosity=1, quiet=False, failfast=False,
@@ -58,6 +56,7 @@ def run(suite, verbosity=1, quiet=False, failfast=False,
 
 def main(argv):
     config = {}
+    from semiauto.loader import TestLoader
     test_loader = TestLoader({"config": config})
     prog = "python -m semiauto"
     indent = " " * len(prog)
