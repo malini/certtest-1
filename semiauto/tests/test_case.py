@@ -1,4 +1,5 @@
 import tornado.testing
+import tornado
 import unittest
 from marionette import Marionette
 
@@ -7,6 +8,7 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
     def __init__(self, *args, **kwargs):
         #self.config = kwargs.pop("config")
         self.handler = kwargs.pop('handler')
+        self.io_loop = kwargs.pop('io_loop')
         super(AsyncTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
@@ -25,6 +27,10 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
         if not self.marionette or not self.marionette.session:
             self.marionette = Marionette()
             self.marionette.start_session()
+
+    def get_new_ioloop(self):
+        import pdb;pdb.set_trace()
+        return self.io_loop
 
     """
     def fetch(self, request, callback):

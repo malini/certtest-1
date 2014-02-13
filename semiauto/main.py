@@ -32,7 +32,7 @@ from tornado.util import raise_exc_info, basestring_type
 
 from tests.test_sms import TestSms
 
-def main(handler, **kwargs):
+def main(handler, loop, **kwargs):
     """A simple test runner.
 
     This test runner is essentially equivalent to `unittest.main` from
@@ -111,7 +111,7 @@ def main(handler, **kwargs):
         # auto2to3), so don't set module if we're not asking for a
         # specific test.
         suite = unittest.TestSuite()
-        suite.addTest(TestSms("test_navigate", handler=handler))
+        suite.addTest(TestSms("test_navigate", handler=handler, io_loop=loop))
         unittest.TextTestRunner().run(suite)
     except SystemExit as e:
         if e.code == 0:

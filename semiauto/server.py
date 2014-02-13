@@ -10,6 +10,7 @@ import tornado.ioloop
 import tornado.httpserver
 from tornado.concurrent import return_future
 from main import main
+from tests import run_me
 
 
 static_dir = os.path.join(os.path.dirname(__file__), "static")
@@ -104,4 +105,6 @@ class TestHandler(tornado.websocket.WebSocketHandler):
 
     def run_tests(self):
         logger.info("runtest")
-        main(self) # TODO:<-- this no longer runs the tests
+        import pdb;pdb.set_trace()
+        main(self, tornado.ioloop.IOLoop.instance()) # TODO:<-- this no longer runs the tests
+        #run_me(self)

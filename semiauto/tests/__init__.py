@@ -1,4 +1,4 @@
-from test_sms import TestSms
+from test_sms import TestSms, run_me
 
 def all(handler):
     env = environment.get(InProcessTestEnvironment)
