@@ -95,13 +95,11 @@ class TestHandler(tornado.websocket.WebSocketHandler):
         print("got user message: %s" % message)
         if message.get("prompt", None):
             print message["prompt"]
-            #self.callback(message["prompt"])
-            self.callback("asdf")
+            self.callback(message["prompt"])
 
     @return_future
     def get_user_input(self, question, callback):
         self.write_message("prompt")
-        import pdb; pdb.set_trace()
         self.callback = callback
 
     def run_tests(self):

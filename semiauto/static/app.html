@@ -12,7 +12,7 @@
     ws.onmessage = function(e) {
       console.log("message:" + e.data);
       if (e.data == "prompt") {
-        ws.send(JSON.stringify({"prompt": "some url"}));
+        ws.send(JSON.stringify({"prompt": "Hi, I'm user data"}));
       }
     };
   };

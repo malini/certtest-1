@@ -13,5 +13,5 @@ class TestSms(AsyncTestCase):
         #our_fetch(self.handler.get_user_input, self.stop,
         #          ["args to get_user_input"])
         #url = self.wait()
-        print "got url: %s" % url
+        print "got user data!: %s" % url
         self.marionette.navigate(url)
