@@ -1,4 +1,5 @@
-# run with `source setup_environment`
+# Run with `source setup_environment.sh`
+
 echo "Setting up virtualenv"
 which pip
 if [ $? != 0 ]; then
