@@ -105,6 +105,5 @@ class TestHandler(tornado.websocket.WebSocketHandler):
 
     def run_tests(self):
         logger.info("runtest")
-        import pdb;pdb.set_trace()
         main(self, tornado.ioloop.IOLoop.instance()) # TODO:<-- this no longer runs the tests
         #run_me(self)

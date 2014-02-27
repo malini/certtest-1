@@ -29,7 +29,6 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
             self.marionette.start_session()
 
     def get_new_ioloop(self):
-        import pdb;pdb.set_trace()
         return self.io_loop
 
     """
@@ -59,4 +58,3 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
 
     def fetch_impl(request, handle_response):
     """
-

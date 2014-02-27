@@ -9,7 +9,7 @@ def run_me(handler):
     print "got user data!: %s" % url
 
 class TestSms(AsyncTestCase):
-    @gen_test
+    @gen.engine
     def test_navigate(self):
         print 'testing'
         #self.handler.get_user_input("some prompt question", self.stop)
