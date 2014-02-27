@@ -5,12 +5,12 @@ Firefox OS Certification Tests
 Dependencies
 ============
 
-marionette_client
-tornado
+* marionette_client
+* tornado
 
 Running Tests
 =============
 
-Execute `python -m semiauto test_sms` to run the test_sms test class.
-To automatically detect available tests you can run `python -m
-semiauto discover` to recursively look for them.
+Execute `python semiauto/environment.py` to start an HTTP server on
+port 6666.  In your browser, navigate to http://localhost:6666/ to
+start the testrun.
