@@ -1,0 +1,3 @@
+content marionette chrome/content/ chrome/content/atoms/
+component {786a1369-dca5-4adc-8486-33d23c88010f} components/marionettecomponent.js
+contract @mozilla.org/marionetteextension;1 {786a1369-dca5-4adc-8486-33d23c88010f}
