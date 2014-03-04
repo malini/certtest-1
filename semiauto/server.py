@@ -100,7 +100,7 @@ class TestHandler(tornado.websocket.WebSocketHandler):
 
     @return_future
     def get_user_input(self, question, callback):
-        self.write_message("prompt")
+        self.write_message({"prompt": question})
         self.callback = callback
 
     def run_tests(self):

@@ -11,8 +11,10 @@
     ws.onclose = function(e) { console.log("closed"); };
     ws.onmessage = function(e) {
       console.log("message:" + e.data);
-      if (e.data == "prompt") {
-        ws.send(JSON.stringify({"prompt": "Hi, I'm user data"}));
+      var data = JSON.parse(e.data);
+      if (data.prompt) {
+        var response = window.prompt(data.prompt);
+        ws.send(JSON.stringify({"prompt": response}));
       }
     };
   };
