@@ -2,8 +2,8 @@ const Cu = Components.utils;
 const {devtools} = Cu.import("resource://gre/modules/devtools/Loader.jsm", {});
 const {require} = devtools;
 const {installPackaged} = require("devtools/app-actor-front");
-Cu.import("resource://gre/modules/devtools/dbg-server.jsm");
-Cu.import("resource://gre/modules/devtools/dbg-client.jsm");
+let { DebuggerServer } = Cu.import("resource://gre/modules/devtools/dbg-server.jsm", {});
+let { DebuggerClient } = Cu.import("resource://gre/modules/devtools/dbg-client.jsm", {});
 
 let gClient, gActor;
 let gAppId = "certtest-app";
