@@ -25,29 +25,23 @@ Cu.import("resource://gre/modules/Log.jsm");
 let loader = Cc["@mozilla.org/moz/jssubscript-loader;1"]
                .getService(Ci.mozIJSSubScriptLoader);
 
-function MarionetteComponent() {
+function MarionetteExtensionComponent() {
   this._loaded = false;
   this.observerService = Services.obs;
 
   // set up the logger
   this.logger = Log.repository.getLogger("Marionette");
   this.logger.level = Log.Level["Trace"];
-  let dumper = false;
-  dumper = true;
-  try {
-    let formatter = new Log.BasicFormatter();
-    this.logger.addAppender(new Log.DumpAppender(formatter));
-    this.logger.info("MDAS HEYYYYYY");
-  }
-  catch(e) {}
+  let formatter = new Log.BasicFormatter();
+  this.logger.addAppender(new Log.DumpAppender(formatter));
+  this.logger.info("Registered MarionetteExtensionComponent");
 }
 
-MarionetteComponent.prototype = {
+MarionetteExtensionComponent.prototype = {
   classDescription: "Marionette Extension component",
   classID: MARIONETTE_CID,
   contractID: MARIONETTE_CONTRACTID,
-  QueryInterface: XPCOMUtils.generateQI([Ci.nsICommandLineHandler, Ci.nsIObserver]),
-  _xpcom_categories: [{category: "profile-after-change", service: true}],
+  QueryInterface: XPCOMUtils.generateQI([Ci.nsIObserver]),
   appName: Services.appinfo.name,
   enabled: false,
   finalUiStartup: false,
@@ -68,22 +62,13 @@ MarionetteComponent.prototype = {
         // Using final-ui-startup as the xpcom category doesn't seem to work,
         // so we wait for that by adding an observer here.
         this.observerService.addObserver(this, "final-ui-startup", false);
-#ifdef ENABLE_MARIONETTE
-        let enabledPref = false;
-        try {
-          enabledPref = Services.prefs.getBoolPref(MARIONETTE_ENABLED_PREF);
-        } catch(e) {}
-        if (enabledPref) {
-          this.enabled = true;
-          this.logger.info("marionette enabled via build flag and pref");
-
-          // We want to suppress the modal dialog that's shown
-          // when starting up in safe-mode to enable testing.
-          if (Services.appinfo.inSafeMode) {
-            this.observerService.addObserver(this, "domwindowopened", false);
-          }
+        this.enabled = true;
+        this.logger.info("marionette enabled via extension");
+        // We want to suppress the modal dialog that's shown
+        // when starting up in safe-mode to enable testing.
+        if (Services.appinfo.inSafeMode) {
+          this.observerService.addObserver(this, "domwindowopened", false);
         }
-#endif
         break;
       case "final-ui-startup":
         this.finalUiStartup = true;
@@ -165,4 +150,4 @@ MarionetteComponent.prototype = {
 
 };
 
-this.NSGetFactory = XPCOMUtils.generateNSGetFactory([MarionetteComponent]);
+this.NSGetFactory = XPCOMUtils.generateNSGetFactory([MarionetteExtensionComponent]);
