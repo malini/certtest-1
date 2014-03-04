@@ -95,7 +95,6 @@ class TestHandler(tornado.websocket.WebSocketHandler):
         message = json.loads(payload)
         print("got user message: %s" % message)
         if message.get("prompt", None):
-            print message["prompt"]
             self.callback(message["prompt"])
 
     @return_future
