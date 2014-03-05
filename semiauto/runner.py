@@ -6,6 +6,9 @@ class PreInstantiatedTestRunner(unittest.runner.TextTestRunner):
     """Allows the `resultclass` argument to be an already instantiated
     ``unittest.results.TestResult`` implementation.
 
+    The sole purpose of this class is to not make unittest terrible,
+    and adds no extra value to our code.  Feel free to ignore it.
+
     """
 
     def __init__(self, *args, **kwargs):
