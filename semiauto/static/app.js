@@ -152,7 +152,11 @@ window.onload = function() {
       var response = window.prompt(data.prompt);
       var payload = JSON.stringify({"prompt": response});
       ws_resp = new WebSocket("ws://localhost:6666/resp");
-      ws_resp.onopen = function(e) { console.log("opened resp"); ws_resp.send(payload);console.log("sent: " + payload);};
+      ws_resp.onopen = function(e) {
+        console.log("opened resp");
+        ws_resp.send(payload);
+        console.log("sent: " + payload);
+      };
     }
   };
 };
