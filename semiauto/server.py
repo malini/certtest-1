@@ -1,14 +1,16 @@
 import json
-import os
 import logging
-import threading
+import os
 import sys
+import threading
 import uuid
 
-import tornado.websocket
-import tornado.ioloop
-import tornado.httpserver
+from tornado import web
 from tornado.concurrent import return_future
+import tornado.httpserver
+import tornado.ioloop
+import tornado.websocket
+
 from main import main
 
 
@@ -24,14 +26,12 @@ def static_path(path):
 class FrontendServer(object):
     def __init__(self, addr):
         self.addr = addr
-        self.routes = tornado.web.Application([
-            (r"/()", tornado.web.StaticFileHandler,
-             {"path": static_path("app.html")}),
-            (r"/(app\.js)", tornado.web.StaticFileHandler,
-             {"path": static_path("app.js")}),
-            (r"/tests", TestHandler),
-            (r"/resp", ResponseHandler)
-        ])
+        self.routes = tornado.web.Application(
+            [(r"/tests", TestHandler),
+             (r"/resp", ResponseHandler),
+             (r"/", web.RedirectHandler, {"url": "/app.html"}),
+             (r"/(.*[html|css|js|png])$", web.StaticFileHandler,
+              {"path": static_dir})])
         self.server = tornado.httpserver.HTTPServer(self.routes)
         self.instance = None
         self.shutdown_event = threading.Event()
