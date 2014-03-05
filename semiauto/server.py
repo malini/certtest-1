@@ -104,7 +104,6 @@ class TestHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.clients.append(self.id)
         logger.info("Accepted new client: %s" % self.id)
-        self.write_message("welcome!")
 
         # Send a list of tests to the client.
         test_list = serialize_suite(self.suite)
