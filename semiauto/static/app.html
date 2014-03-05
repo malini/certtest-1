@@ -1,27 +1,19 @@
-<!doctype html>
-<meta charset=utf-8>
-<title>Firefox OS Conformance Tests</title>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Firefox OS Conformance Tests</title>
 
-<script>
-  var ws;
+    <link rel="stylesheet" href="/look.css" />
+    <script src="app.js"></script>
+  </head>
 
-  window.onload = function() {
-    ws = new WebSocket("ws://localhost:6666/tests");
-    ws.onopen = function(e) { console.log("opened"); };
-    ws.onclose = function(e) { console.log("closed"); };
-    ws.onmessage = function(e) {
-      console.log("received: " + e.data);
-      var data = JSON.parse(e.data);
-      if (data.prompt) {
-        var response = window.prompt(data.prompt);
-        var payload = JSON.stringify({"prompt": response});
-        ws_resp = new WebSocket("ws://localhost:6666/resp");
-        ws_resp.onopen = function(e) { console.log("opened resp"); ws_resp.send(payload);console.log("sent: " + payload);};
-      }
-    };
-  };
-</script>
-
-<body>
-  <p>hei!</p>
-</body>
+  <body>
+    <table id="test_list">
+      <tr>
+        <th>Outcome</th>
+        <th>Description</th>
+      </tr>
+    </table>
+  </body>
+</html>
