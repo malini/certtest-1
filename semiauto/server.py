@@ -30,7 +30,8 @@ class FrontendServer(object):
              {"path": static_path("app.html")}),
             (r"/(app\.js)", tornado.web.StaticFileHandler,
              {"path": static_path("app.js")}),
-            (r"/tests", TestHandler)
+            (r"/tests", TestHandler),
+            (r"/resp", ResponseHandler)
         ])
         self.server = tornado.httpserver.HTTPServer(self.routes)
         self.instance = None
@@ -65,13 +66,21 @@ class FrontendServer(object):
             tornado.ioloop.IOLoop.instance().start()
 
 
+class ResponseHandler(tornado.websocket.WebSocketHandler):
+    def on_message(self, payload):
+        message = json.loads(payload)
+        print("got user message in resp: %s" % message)
+        if message.get("prompt", None):
+            global test_callback
+            test_callback(message["prompt"])
+
+
 class TestHandler(tornado.websocket.WebSocketHandler):
     clients = []
 
     def __init__(self, *args, **kwargs):
         super(TestHandler, self).__init__(*args, **kwargs)
         self.id = uuid.uuid4()
-        self.callback = None
 
     def open(self):
         self.clients.append(self.id)
@@ -94,15 +103,12 @@ class TestHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, payload):
         message = json.loads(payload)
         print("got user message: %s" % message)
-        if message.get("prompt", None):
-            self.callback(message["prompt"])
 
-    @return_future
     def get_user_input(self, question, callback):
         self.write_message({"prompt": question})
-        self.callback = callback
+        global test_callback
+        test_callback = callback
 
     def run_tests(self):
         logger.info("runtest")
-        main(self, tornado.ioloop.IOLoop.instance()) # TODO:<-- this no longer runs the tests
-        #run_me(self)
+        main(self, tornado.ioloop.IOLoop.instance())

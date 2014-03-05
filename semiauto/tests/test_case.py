@@ -8,7 +8,7 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
     def __init__(self, *args, **kwargs):
         #self.config = kwargs.pop("config")
         self.handler = kwargs.pop('handler')
-        self.io_loop = kwargs.pop('io_loop')
+        self.new_io_loop = kwargs.pop('io_loop')
         super(AsyncTestCase, self).__init__(*args, **kwargs)
 
     def setUp(self):
@@ -29,7 +29,7 @@ class AsyncTestCase(tornado.testing.AsyncTestCase):
             self.marionette.start_session()
 
     def get_new_ioloop(self):
-        return self.io_loop
+        return self.new_io_loop
 
     """
     def fetch(self, request, callback):
