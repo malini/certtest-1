@@ -31,9 +31,8 @@ class TestEventDelegator(unittest.runner.TextTestResult):
 
     """
 
-    def __init__(self, stream, descriptions, verbosity):
-        super(TestEventDelegator, self).__init__(
-            stream, descriptions, verbosity)
+    def __init__(self, *args):
+        super(TestEventDelegator, self).__init__(*args)
         self.cbs = []
 
     def add_callback(self, cb):
