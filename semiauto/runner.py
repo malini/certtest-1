@@ -16,13 +16,12 @@ class PreInstantiatedTestRunner(unittest.runner.TextTestRunner):
 
 
 class TestEventDelegator(unittest.runner.TextTestResult):
-
     """Allows attaching callback classes for state changes to tests.
 
     This class injects a callback delegator preserving the behaviour
-    of ``unittest.runner.TextTestResult``.  Using ``add_callback(cb)``
-    on this class one can add additional hooks to test runner events
-    by implementing the ``TestEvents`` callback interface.
+    of ``unittest.results.TestResult``.  Using ``add_callback(cb)`` on
+    this class one can add additional hooks to test runner events by
+    implementing the ``TestEvents`` callback interface.
 
     """
 
