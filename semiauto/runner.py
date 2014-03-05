@@ -101,6 +101,10 @@ class TestEvents(object):
     The hooks are called immediately after the relevant
     ``unittest.runner.TextTestResult`` actions have been performed.
 
+    Since this is an abstract base class you can voluntarily implement
+    all or just a subset of these methods in your implementation.
+    This allows hooks to only listen for one or more specific events.
+
     """
 
     def on_test_run_start(self):
