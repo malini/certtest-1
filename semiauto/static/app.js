@@ -1,4 +1,3 @@
-/*
 "use strict";
 
 const SERVER_ADDR = window.location.host;
@@ -93,8 +92,16 @@ var Client = function(addr) {
       ws.onopen = function(e) { console.log("opened"); };
       ws.onclose = function(e) { console.log("closed"); };
       ws.onmessage = function(e) {
-        if (e.data == "prompt") {
-          self.emit("prompt", "Hi, I'm user data");
+        var data = JSON.parse(e.data);
+        if (data.prompt) {
+          var response = window.prompt(data.prompt);
+          var payload = JSON.stringify({"prompt": response});
+          var respWs = new WebSocket("ws://" + addr + "/resp");
+          respWs.onopen = function(e) {
+            console.log("opened resp");
+            respWs.send(payload);
+            console.log("sent: " + payload);
+          };
         }
       };
     },
@@ -137,26 +144,3 @@ function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init, false);
-*/
-
-var ws;
-
-window.onload = function() {
-  ws = new WebSocket("ws://localhost:6666/tests");
-  ws.onopen = function(e) { console.log("opened"); };
-  ws.onclose = function(e) { console.log("closed"); };
-  ws.onmessage = function(e) {
-    console.log("received: " + e.data);
-    var data = JSON.parse(e.data);
-    if (data.prompt) {
-      var response = window.prompt(data.prompt);
-      var payload = JSON.stringify({"prompt": response});
-      ws_resp = new WebSocket("ws://localhost:6666/resp");
-      ws_resp.onopen = function(e) {
-        console.log("opened resp");
-        ws_resp.send(payload);
-        console.log("sent: " + payload);
-      };
-    }
-  };
-};
