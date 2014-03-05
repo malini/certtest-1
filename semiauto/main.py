@@ -30,7 +30,9 @@ from tornado.log import gen_log
 from tornado.stack_context import ExceptionStackContext
 from tornado.util import raise_exc_info, basestring_type
 
-from tests.test_sms import TestSms
+from runner import PreInstantiatedTestRunner
+from runner import TestEventDelegator
+from runner import TestStateUpdater
 
 
 def main(handler, io_loop, **kwargs):
@@ -111,9 +113,26 @@ def main(handler, io_loop, **kwargs):
         # its own test discovery, which is incompatible with
         # auto2to3), so don't set module if we're not asking for a
         # specific test.
+
+        # TODO: Test discovery and automatic test class
+        # instantiation with correct arguments
         suite = unittest.TestSuite()
+        from tests.test_sms import TestSms
         suite.addTest(TestSms("test_navigate", handler=handler, io_loop=io_loop))
-        unittest.TextTestRunner().run(suite)
+
+        # TODO: Get introspected list of tests from runner that we can
+        # pass along to the handler.  The handler will send this list
+        # of tests to the client when it connects.
+
+        # TODO: Clean up:
+        runner = PreInstantiatedTestRunner()
+        delegator = TestEventDelegator(
+            runner.stream, runner.descriptions, runner.verbosity)
+        runner.resultclass = delegator
+        updater = TestStateUpdater(handler)
+        runner.resultclass.add_callback(updater)
+
+        runner.run(suite)
     except SystemExit as e:
         if e.code == 0:
             gen_log.info("PASS")
