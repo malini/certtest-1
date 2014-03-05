@@ -19,10 +19,6 @@ pip install marionette_client
 pip install tornado
 echo "Installing CertTest app on phone"
 pushd device_setup
-./push_bundles.sh
-if [ $? != 0 ]; then
-  exit 1
-fi
 python device_setup.py
 popd
 echo "Done"
