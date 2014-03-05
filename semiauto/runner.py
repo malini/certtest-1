@@ -31,8 +31,8 @@ class TestEventDelegator(unittest.runner.TextTestResult):
 
     """
 
-    def __init__(self, *args):
-        super(TestEventDelegator, self).__init__(*args)
+    def __init__(self, *args, **kwargs):
+        super(TestEventDelegator, self).__init__(*args, **kwargs)
         self.cbs = []
 
     def add_callback(self, cb):
