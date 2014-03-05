@@ -114,12 +114,6 @@ def main(handler, io_loop, **kwargs):
         # auto2to3), so don't set module if we're not asking for a
         # specific test.
 
-        # TODO: Test discovery and automatic test class
-        # instantiation with correct arguments
-        suite = unittest.TestSuite()
-        from tests.test_sms import TestSms
-        suite.addTest(TestSms("test_navigate", handler=handler, io_loop=io_loop))
-
         # TODO: Get introspected list of tests from runner that we can
         # pass along to the handler.  The handler will send this list
         # of tests to the client when it connects.
@@ -132,7 +126,8 @@ def main(handler, io_loop, **kwargs):
         updater = TestStateUpdater(handler)
         runner.resultclass.add_callback(updater)
 
-        runner.run(suite)
+        # TODO(ato): Total hack
+        runner.run(handler.suite)
     except SystemExit as e:
         if e.code == 0:
             gen_log.info("PASS")

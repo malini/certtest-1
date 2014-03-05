@@ -4,6 +4,7 @@ import os
 import sys
 import threading
 import uuid
+import unittest
 
 from tornado import web
 from tornado.concurrent import return_future
@@ -75,17 +76,40 @@ class ResponseHandler(tornado.websocket.WebSocketHandler):
             test_callback(message["prompt"])
 
 
+def serialize_suite(tests):
+    """Serialize a ``unittest.TestSuite`` instance for transportation
+    across the wire.
+
+    Tests are represented by their hash as we have no desire to
+    replicate the full Test instance object on the client side.
+
+    """
+
+    rv = []
+    for test in tests:
+        rv.append({"id": hash(test),
+                   "description": str(test)})
+    return rv
+
+
 class TestHandler(tornado.websocket.WebSocketHandler):
     clients = []
 
     def __init__(self, *args, **kwargs):
         super(TestHandler, self).__init__(*args, **kwargs)
         self.id = uuid.uuid4()
+        # TODO(ato): Hack
+        self.suite = self.get_test_list()
 
     def open(self):
         self.clients.append(self.id)
         logger.info("Accepted new client: %s" % self.id)
         self.write_message("welcome!")
+
+        # Send a list of tests to the client.
+        test_list = serialize_suite(self.suite)
+        self.emit("testList", test_list)
+
         self.run_tests()
 
     def on_close(self):
@@ -114,3 +138,24 @@ class TestHandler(tornado.websocket.WebSocketHandler):
     def run_tests(self):
         logger.info("runtest")
         main(self, tornado.ioloop.IOLoop.instance())
+
+    # TODO(ato): Total hack.  Instead of reading in the test list here
+    # we should rely on what the user passes in from command-line or
+    # on auto-discovery through unittest.
+    #
+    # Because classes that extend semiauto.TestCase expect a reference
+    # to this class and the IOLoop we are currently required to put it
+    # here.
+    #
+    # This code was moved here from the main function in main.py
+    # because main is currently called from this class when a client
+    # connects, which means we'd have no way of sending the test list
+    # to the client before running the tests.
+    def get_test_list(self):
+        # TODO: Test discovery and automatic test class instantiation
+        # with correct arguments
+        suite = unittest.TestSuite()
+        from tests.test_sms import TestSms
+        io_loop = tornado.ioloop.IOLoop.instance()
+        suite.addTest(TestSms("test_navigate", handler=self, io_loop=io_loop))
+        return suite
