@@ -36,11 +36,6 @@ class TestEventDelegator(unittest.runner.TextTestResult):
 
         self.cbs.append(cb)
 
-    def getDescription(self, test):
-        super(TestEventDelegator, self).getDescription(test)
-        for cb in self.cbs:
-            cb.get_description(test)
-
     def startTestRun(self):
         super(TestEventDelegator, self).startTestRun()
         for cb in self.cbs:
@@ -61,10 +56,10 @@ class TestEventDelegator(unittest.runner.TextTestResult):
         for cb in self.cbs:
             cb.on_error(test, err)
 
-    def addFailure(self, test):
-        super(TestEventDelegator, self).addFailure(test)
+    def addFailure(self, test, err):
+        super(TestEventDelegator, self).addFailure(test, err)
         for cb in self.cbs:
-            cb.on_failure(test)
+            cb.on_failure(test, err)
 
     def addSkip(self, test, reason):
         super(TestEventDelegator, self).addSkip(test, reason)
@@ -100,10 +95,6 @@ class TestEvents(object):
 
     """
 
-    # TODO(ato): Not sure get_description is needed
-    def get_description(self, test):
-        pass
-
     def on_test_run_start(self):
         pass
 
@@ -116,7 +107,7 @@ class TestEvents(object):
     def on_error(self, test):
         pass
 
-    def on_failure(self, test):
+    def on_failure(self, test, err):
         pass
 
     def on_skip(self, test, reason):
@@ -153,35 +144,69 @@ class TestStateUpdater(TestEvents):
 
         self.client = handler
 
-    def get_description(self, test):
-        print("getDescription!")
+    # TODO(ato): This can be improved:
+    def send_event(self, event, test=None, **kwargs):
+        """Send event to the currently connected client.
+
+        If a test specified a weak reference to it will be used
+        (`test.__hash__()`).  Additional key-values can be given
+        as keyword arguments.
+
+        Because a canonical list of tests is already in the browser's
+        cache it will use the test reference as a key to look up the
+        test's which state to change.
+
+        Some sample JSON objects emitted from this could be::
+
+            {"testRunStart"}
+            {"testStart": {"id": 12345678}}
+            {"skip"}
+
+        :param event: The event command to send to the client.
+
+        :param test: Optional test to include as context.
+
+        :param kwargs: Optional additional arguments to be included.
+            These must be serializable by `json`.
+
+        """
+
+        payload = kwargs
+
+        # TODO(ato): Serialization of socket.error, etc.
+        if "error" in payload:
+            payload["error"] = str(payload["error"])
+
+        if test:
+            payload["id"] = test.__hash__()
+        self.client.emit(event, payload if payload else None)
 
     def on_test_run_start(self):
-        self.client.emit("testRunStart", None)
+        self.send_event("testRunStart")
 
     def on_test_start(self, test):
-        self.client.emit("testStart", None)
+        self.send_event("testStart", test)
 
     def on_success(self, test):
-        self.client.emit("success", None)
+        self.send_event("success", test)
 
     def on_error(self, test, err):
-        self.client.emit("error", None)
+        self.send_event("error", test, error=err)
 
-    def on_failure(self, test):
-        self.client.emit("failure", None)
+    def on_failure(self, test, err):
+        self.send_event("failure", test, error=err)
 
     def on_skip(self, test, reason):
-        self.client.emit("skip", None)
+        self.send_event("skip", test, reason=reason)
 
     def on_expected_failure(self, test, err):
-        self.client.emit("expectedFailure", None)
+        self.send_event("expectedFailure", test, error=err)
 
     def on_unexpected_success(self, test):
-        self.client.emit("unexpectedSuccess", None)
+        self.send_event("unexpectedSuccess", test)
 
     def on_test_stop(self, test):
-        self.client.emit("testStop", None)
+        self.send_event("testStop", test)
 
     def on_test_run_stop(self):
-        self.client.emit("testRunStop", None)
+        self.send_event("testRunStop")

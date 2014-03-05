@@ -93,8 +93,10 @@ class TestHandler(tornado.websocket.WebSocketHandler):
         logger.info("Client left")
 
     def emit(self, event, data):
-        command = (event, data)
-        self.write_message(json.dumps(command))
+        command = {event: data}
+        payload = json.dumps(command)
+        logger.info("Sending %s" % payload)
+        self.write_message(payload)
 
     def handle_event(self, event, data):
         print("event: %r" % event)
