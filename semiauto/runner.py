@@ -161,8 +161,8 @@ class TestStateUpdater(TestEvents):
         """Send event to the currently connected client.
 
         If a test specified a weak reference to it will be used
-        (`test.__hash__()`).  Additional key-values can be given
-        as keyword arguments.
+        (`hash(test)`).  Additional key-values can be given as keyword
+        arguments.
 
         Because a canonical list of tests is already in the browser's
         cache it will use the test reference as a key to look up the
@@ -190,7 +190,7 @@ class TestStateUpdater(TestEvents):
             payload["error"] = str(payload["error"])
 
         if test:
-            payload["id"] = test.__hash__()
+            payload["id"] = hash(test)
         self.client.emit(event, payload if payload else None)
 
     def on_test_run_start(self):
