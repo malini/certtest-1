@@ -35,7 +35,7 @@ class TestCase(tornado.testing.AsyncTestCase):
         """Prompt the user for a reply.  Returns a future which must be
         yielded.
 
-        This will spawn a `window.prompt` in the host browser window
+        This will trigger an overlay  in the host browser window
         which can be used to tell the user to perform an action or to
         input some manual data for us to work on.
 
@@ -50,8 +50,36 @@ class TestCase(tornado.testing.AsyncTestCase):
         :param message: The question to ask or message to give the
             user.
 
-        :returns: A generator which must be yielded.
+        :returns: A generator which must be yielded. Once yielded,
+                  the return value will be the value of the prompt,
+                  or False if the user hit 'Cancel'
 
         """
 
         return tornado.gen.Task(self.handler.get_user_input, message)
+
+    def instruct(self, message):
+        """Presents the user with an instruction.  Returns a future which
+        must be yielded.
+
+        This will trigger an overlay in the host browser window
+        which can be used to tell the user to perform an action or to
+        input some manual data for us to work on.
+
+        Sample usage::
+
+            answer = yield prompt("What's the meaning of life?")
+            assert answer == 42
+
+        This function is a simple wrapper for ``tornado.gen.Task``,
+        and is equivalent to the usage of that.
+
+        :param message: The instruction you want to give the user
+
+        :returns: A generator which must be yielded. Once yielded,
+                  the reutrn value will be either True if they 
+                  succeeded or False if they did not.
+
+        """
+
+        return tornado.gen.Task(self.handler.instruct_user, message)

@@ -76,6 +76,8 @@ class ResponseHandler(tornado.websocket.WebSocketHandler):
             test_callback(message["prompt"])
         elif "cancelPrompt" in message:
             test_callback(False)
+        elif "instructPromptOk" in message:
+            test_callback(True)
 
 def serialize_suite(tests):
     """Serialize a ``unittest.TestSuite`` instance for transportation
@@ -135,6 +137,11 @@ class TestHandler(tornado.websocket.WebSocketHandler):
     # not sure there's a better way.
     def get_user_input(self, question, callback):
         self.write_message({"prompt": question})
+        global test_callback
+        test_callback = callback
+
+    def instruct_user(self, instruction, callback):
+        self.write_message({"instructPrompt": instruction})
         global test_callback
         test_callback = callback
 

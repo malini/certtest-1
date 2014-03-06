@@ -112,14 +112,12 @@ Client.prototype = {
   },
 
   instructUser: function(text) {
-    var cancel = $("#cancel");
     var dialogResponse = $("#dialogResponse");
-    cancel.className = "hidden";
     dialogResponse.className = "hidden";
     this.showOverlay(text);
     var ok = $("#ok");
-    var payload = JSON.stringify({"instruct": ""});
-    ok.onclick = this.sendResponse(payload);
+    var payload = JSON.stringify({"instructPromptOk": ""});
+    ok.onclick = function() {this.sendResponse(payload)}.bind(this);
   },
 
   connect: function() {
@@ -146,7 +144,9 @@ Client.prototype = {
       else if (data.prompt) {
         // handle request for user data
         this.promptUser(data.prompt);
-        //var response = window.prompt(data.prompt);
+      }
+      else if (data.instructPrompt) {
+        this.instructUser(data.instructPrompt);
       }
       else if (data.updateTest){
         // TODO: this assumes any other request will be to update the table
