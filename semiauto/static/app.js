@@ -71,9 +71,8 @@ TestListView.prototype = {
 };
 
 function Client(addr) {
-  this.ws;
-  this.testList;
   this.addr = addr;
+  this.ws, this.testList = null;
 }
 
 Client.prototype = {
