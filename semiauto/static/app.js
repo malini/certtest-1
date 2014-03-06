@@ -76,6 +76,47 @@ function Client(addr) {
 }
 
 Client.prototype = {
+  sendResponse: function(payload) {
+    var respWs = new WebSocket("ws://" + this.addr + "/resp");
+    respWs.onopen = function(e) {
+      respWs.send(payload);
+      console.log("sent: " + payload);
+      respWs.close();
+      var overlay = $("#overlay");
+      overlay.className = "overlay hidden";
+    };
+  },
+
+  sendUserData: function() { 
+    var dialogResponse = $("#dialogResponse");
+    var payload = JSON.stringify({"prompt": dialogResponse.value});
+    this.sendResponse(payload);
+  },
+
+  showOverlay: function(text) {
+    var dialogText = $("#dialogText");
+    var overlay = $("#overlay");
+    dialogText.innerHTML = text;
+    overlay.className = "overlay"; //remove 'hidden'
+  },
+
+  promptUser: function(text) {
+    this.showOverlay(text);
+    var ok = $("#ok");
+    ok.onclick = function() {this.sendUserData()}.bind(this);
+  },
+
+  instructUser: function(text) {
+    var cancel = $("#cancel");
+    var dialogResponse = $("#dialogResponse");
+    cancel.className = "hidden";
+    dialogResponse.className = "hidden";
+    this.showOverlay(text);
+    var ok = $("#ok");
+    var payload = JSON.stringify({"instruct": null});
+    ok.onclick = this.sendResponse(payload);
+  },
+
   connect: function() {
     this.ws = new WebSocket("ws://" + this.addr + "/tests");
     this.ws.onopen = function(e) { console.log("opened"); }.bind(this);
@@ -97,14 +138,8 @@ Client.prototype = {
       }
       else if (data.prompt) {
         // handle request for user data
-        var response = window.prompt(data.prompt);
-        var payload = JSON.stringify({"prompt": response});
-        var respWs = new WebSocket("ws://" + this.addr + "/resp");
-        respWs.onopen = function(e) {
-          respWs.send(payload);
-          console.log("sent: " + payload);
-          respWs.close();
-        };
+        this.promptUser(data.prompt);
+        //var response = window.prompt(data.prompt);
       }
       else if (data.updateTest){
         // TODO: this assumes any other request will be to update the table

@@ -6,6 +6,8 @@
 
     <link rel="stylesheet" href="/look.css" />
     <script src="app.js"></script>
+    <script>
+    </script>
   </head>
 
   <body>
@@ -22,6 +24,17 @@
           <th>Result</th>
         </tr>
       </table>
+      <div id="overlay" class="overlay hidden">
+        <div class="dialogBox">
+          <br/>
+          <div id="dialogText">
+          </div>
+          <br/>
+          <input type="text" id="dialogResponse" maxlength="140" />
+          <button id="ok">OK</button>
+          <button id="cancel">Cancel</button>
+        </div>
+      </div>
     </div>
   </body>
 </html>

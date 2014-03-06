@@ -15,7 +15,7 @@
 * { margin: 0; padding: 0; }
 
 body {
-  background: url("bg-gradient-sand.png") repeat-x scroll 0px 0px, url("bg-sand.png") repeat scroll 0px 0px, none repeat scroll 0% 0% #F5F1E8;
+  background: #F0F0F0;
   font-family: "Open Sans", "Droid Arabic Naskh", "Mplus Fulah", sans-serif;
   font-size: 14px;
   color: #333;
@@ -95,4 +95,25 @@ tr.fail {
 
 tr.success {
   background-color: #99D699;
+}
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  background-color: rgba(0,0,0,0.5); /*dim the background*/
+}
+.hidden {
+  visibility:hidden;
+}
+.dialogBox {
+  top: 40%;
+  left: 40%;
+  position: fixed;
+  margin: 0 auto;
+  min-width: 20%;
+  text-align: center;
+  background-color: white;
 }
