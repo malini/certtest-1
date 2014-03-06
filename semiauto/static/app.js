@@ -2,9 +2,8 @@
 
 const SERVER_ADDR = window.location.host;
 
-// TODO: This didn't succeed at retrieving elements, like $("test_list")
 function $(selector) {
-  var els = document.querySelectorAll(selector);
+  var els = document.querySelectorAll(String(selector));
   return els.length > 1 ? els : els[0];
 };
 
@@ -25,20 +24,21 @@ TestListView.prototype = {
     for (var index in this.tests) {
       var test = this.tests[index];
       var rowNode = this.el.insertRow(-1);
-      rowNode.id = test.id;
+      rowNode.id = "test" + test.id;
       var descriptionNode = rowNode.insertCell(0);
       var resultNode = rowNode.insertCell(1);
       descriptionNode.innerHTML = test.description;
-      resultNode.id = test.id + "result";
       resultNode.addClass("result");
       resultNode.innerHTML = "";
     }
   },
 
-  setTestState: function(testId, className, result) {
-    document.getElementById(testId).className = className;
+  setTestState: function(testId, outcome, result) {
+    var el = $("#test" + testId);
+    el.className = outcome;
     if (result) {
-      document.getElementById(testId + "result").innerHTML = result;
+      var resultCell = el.getElementsByClassName("result")[0];
+      resultCell.innerHTML = result;
     }
   },
 
@@ -85,7 +85,7 @@ Client.prototype = {
       var data = JSON.parse(e.data);
       if (data.testList) {
         // set up the test_list table
-        this.testList = new TestListView(document.getElementById("test_list"), data.testList);
+        this.testList = new TestListView($("#test_list"), data.testList);
         this.testList.resetTable();
       }
       else if (data.testRunStart) {
