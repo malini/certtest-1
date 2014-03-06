@@ -70,7 +70,8 @@ class FrontendServer(object):
 class ResponseHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, payload):
         message = json.loads(payload)
-        print("got user message in resp: %s" % message)
+        logger.info("Received %s" % payload)
+
         if message.get("prompt", None):
             global test_callback
             test_callback(message["prompt"])
@@ -123,12 +124,15 @@ class TestHandler(tornado.websocket.WebSocketHandler):
 
     def handle_event(self, event, data):
         print("event: %r" % event)
-        print("  data: %s" % data)
+        print(" data: %s" % data)
 
+    # TODO(ato): Is this in use now that we have the ResponseHandler?
     def on_message(self, payload):
         message = json.loads(payload)
-        print("got user message: %s" % message)
+        logger.info("Received %s" % payload)
 
+    # TODO(ato): Using a global and a second WS seems hacky, but I'm
+    # not sure there's a better way.
     def get_user_input(self, question, callback):
         self.write_message({"prompt": question})
         global test_callback
