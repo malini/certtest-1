@@ -111,7 +111,7 @@ Client.prototype = {
         // TODO: this assumes any other request will be to update the table
         this.testList.updateTest(data.updateTest);
       }
-    }.bind(this);s
+    }.bind(this);
   },
 
   emit: function(event, data) {
