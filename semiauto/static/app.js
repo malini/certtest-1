@@ -29,39 +29,38 @@ TestListView.prototype = {
     }
   },
 
-  setTestState: function(test_id, color) {
-    document.getElementById(test_id).style.background = color;
+  setTestState: function(test_id, className) {
+    document.getElementById(test_id).className = " " + className;
   },
 
   updateTest: function(data) {
     //TODO: I propose we use {"updateResult" {"type": "success", id:"id", ...}}
     // so I can use a nice switch case here instead of all these ifs!
     if (data.testStart) {
-      this.setTestState(data.testStart.id, "yellow");
+      this.setTestState(data.testStart.id, "start");
     }
     else if (data.success) {
-      this.setTestState(data.success.id, "green");
+      this.setTestState(data.success.id, "success");
       document.getElementById(data.success.id + "result").innerHTML = "Pass";
     }
     else if (data.expectedFailure) {
-      this.setTestState(data.expectedFailure.id, "green");
+      this.setTestState(data.expectedFailure.id, "success");
       document.getElementById(data.expectedFailure.id + "result").innerHTML = "Expected failure";
     }
     else if (data.skip) {
-      this.setTestState(data.skip.id, "blue");
+      this.setTestState(data.skip.id, "success");
       document.getElementById(data.skip.id + "result").innerHTML = data.skip.reason;
-      document.getElementById(data.skip.id + "result").innerHTML = "Skipped";
     }
     else if (data.error) {
-      this.setTestState(data.error.id, "red");
+      this.setTestState(data.error.id, "fail");
       document.getElementById(data.error.id + "result").innerHTML = data.error.error;
     }
     else if (data.failure) {
-      this.setTestState(data.failure.id, "red");
+      this.setTestState(data.failure.id, "fail");
       document.getElementById(data.failure.id + "result").innerHTML = data.failure.error;
     }
     else if (data.unexpectedSuccess) {
-      this.setTestState(data.unexpectedSuccess.id, "red");
+      this.setTestState(data.unexpectedSuccess.id, "fail");
       document.getElementById(data.unexpectedSuccess.id + "result").innerHTML = "Unexpected success";
     }
     else {

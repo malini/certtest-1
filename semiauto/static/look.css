@@ -18,6 +18,7 @@ table {
 
 th {
   font-size: 20px;
+  color: #50555B;
 }
 
 td {
@@ -26,4 +27,14 @@ td {
   padding: 0.5% 2%;
   width:50%;
 }
+tr.start {
+  background-color: yellow;
+}
 
+tr.fail {
+  background-color: #FFB3B3;
+}
+
+tr.success {
+  background-color: #99D699;
+}
