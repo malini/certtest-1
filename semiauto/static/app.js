@@ -41,13 +41,16 @@ TestListView.prototype = {
     }
     else if (data.success) {
       this.setTestState(data.success.id, "green");
+      document.getElementById(data.success.id + "result").innerHTML = "Pass";
     }
     else if (data.expectedFailure) {
       this.setTestState(data.expectedFailure.id, "green");
+      document.getElementById(data.expectedFailure.id + "result").innerHTML = "Expected failure";
     }
     else if (data.skip) {
-      this.setTestState(data.skip.id, "grey");
+      this.setTestState(data.skip.id, "blue");
       document.getElementById(data.skip.id + "result").innerHTML = data.skip.reason;
+      document.getElementById(data.skip.id + "result").innerHTML = "Skipped";
     }
     else if (data.error) {
       this.setTestState(data.error.id, "red");
@@ -59,6 +62,7 @@ TestListView.prototype = {
     }
     else if (data.unexpectedSuccess) {
       this.setTestState(data.unexpectedSuccess.id, "red");
+      document.getElementById(data.unexpectedSuccess.id + "result").innerHTML = "Unexpected success";
     }
     else {
       console.log("got: " + data);
