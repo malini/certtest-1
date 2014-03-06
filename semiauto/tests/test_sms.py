@@ -1,21 +1,12 @@
 from tornado.testing import gen_test
 from tornado import gen
 
-from test_case import AsyncTestCase
+from tests import TestCase
 from functools import partial
 
 
-class TestSms(AsyncTestCase):
-    # def test_navigate(self):
-    #     print 'testing'
-    #     self.io_loop.add_callback(partial(self.handler.get_user_input, "some prompt questions", self.stop))
-    #     url = self.wait()
-    #     print "got user data!: %s" % url
-    #     self.assertEqual(url, "asdf")
-    #     #self.marionette.navigate(url)
-
+class TestSms(TestCase):
     @gen_test
     def test_navigate(self):
-        answer = yield gen.Task(
-            self.handler.get_user_input, "What's the meaning of life?")
+        answer = yield self.prompt("What's the meaning of life?")
         self.assertEqual(answer, "42")

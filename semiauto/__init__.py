@@ -1,3 +1,3 @@
-from tests.test_case import AsyncTestCase
+from tests.tests import TestCase
 from main import main
 from loader import *
