@@ -35,42 +35,37 @@ TestListView.prototype = {
     }
   },
 
-  setTestState: function(test_id, className) {
-    document.getElementById(test_id).className = className;
+  setTestState: function(testId, className, result) {
+    document.getElementById(testId).className = className;
+    if (result) {
+      document.getElementById(testId + "result").innerHTML = result;
+    }
   },
 
   updateTest: function(data) {
-    //TODO: I propose we use {"updateResult" {"type": "success", id:"id", ...}}
-    // so I can use a nice switch case here instead of all these ifs!
-    if (data.testStart) {
-      this.setTestState(data.testStart.id, "start");
-    }
-    else if (data.success) {
-      this.setTestState(data.success.id, "success");
-      document.getElementById(data.success.id + "result").innerHTML = "Pass";
-    }
-    else if (data.expectedFailure) {
-      this.setTestState(data.expectedFailure.id, "success");
-      document.getElementById(data.expectedFailure.id + "result").innerHTML = "Expected failure";
-    }
-    else if (data.skip) {
-      this.setTestState(data.skip.id, "success");
-      document.getElementById(data.skip.id + "result").innerHTML = data.skip.reason;
-    }
-    else if (data.error) {
-      this.setTestState(data.error.id, "fail");
-      document.getElementById(data.error.id + "result").innerHTML = data.error.error;
-    }
-    else if (data.failure) {
-      this.setTestState(data.failure.id, "fail");
-      document.getElementById(data.failure.id + "result").innerHTML = data.failure.error;
-    }
-    else if (data.unexpectedSuccess) {
-      this.setTestState(data.unexpectedSuccess.id, "fail");
-      document.getElementById(data.unexpectedSuccess.id + "result").innerHTML = "Unexpected success";
-    }
-    else {
-      console.log("got: " + data);
+    var testData = data.testData;
+    switch (testData.event) {
+      case "testStart":
+        this.setTestState(testData.id, "start");
+        break;
+      case "success":
+        this.setTestState(testData.id, "success", "Pass");
+        break;
+      case "expectedFailure":
+        this.setTestState(testData.id, "success", "Expected failure");
+        break;
+      case "skip":
+        this.setTestState(testData.id, "success", testData.reason);
+        break;
+      case "error":
+        this.setTestState(testData.id, "fail", testData.error);
+        break;
+      case "failure":
+        this.setTestState(testData.id, "fail", testData.error);
+        break;
+      case "expectedSuccess":
+        this.setTestState(testData.id, "fail", "Unexpected success")
+        break;
     }
   },
 };
@@ -88,9 +83,6 @@ Client.prototype = {
     this.ws.onclose = function(e) { console.log("closed"); }.bind(this);
     this.ws.onmessage = function(e) {
       var data = JSON.parse(e.data);
-      for (var i in data) {
-        console.log(data[i]);
-      }
       if (data.testList) {
         // set up the test_list table
         this.testList = new TestListView(document.getElementById("test_list"), data.testList);
@@ -115,11 +107,11 @@ Client.prototype = {
           respWs.close();
         };
       }
-      else {
+      else if (data.updateTest){
         // TODO: this assumes any other request will be to update the table
-        this.testList.updateTest(data);
+        this.testList.updateTest(data.updateTest);
       }
-    }.bind(this);
+    }.bind(this);s
   },
 
   emit: function(event, data) {

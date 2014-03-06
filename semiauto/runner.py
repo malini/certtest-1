@@ -184,14 +184,17 @@ class TestStateUpdater(TestEvents):
         """
 
         payload = kwargs
+        testInfo = {}
 
         # TODO(ato): Serialization of socket.error, etc.
-        if "error" in payload:
-            payload["error"] = str(payload["error"])
-
         if test:
             payload["id"] = hash(test)
-        self.client.emit(event, payload if payload else None)
+            if "error" in payload:
+                payload["error"] = str(payload["error"])
+            payload["event"] = event
+            self.client.emit("updateTest", {"testData": payload})
+        else:
+            self.client.emit(event, payload if payload else None)
 
     def on_test_run_start(self):
         self.send_event("testRunStart")
