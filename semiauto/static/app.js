@@ -64,10 +64,10 @@ TestListView.prototype = {
         this.setTestState(testData.id, "fail", testData.error);
         break;
       case "expectedSuccess":
-        this.setTestState(testData.id, "fail", "Unexpected success")
+        this.setTestState(testData.id, "fail", "Unexpected success");
         break;
     }
-  },
+  }
 };
 
 function Client(addr) {
