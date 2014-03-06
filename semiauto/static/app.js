@@ -93,6 +93,11 @@ Client.prototype = {
     this.sendResponse(payload);
   },
 
+  cancelPrompt: function() { 
+    var payload = JSON.stringify({"cancelPrompt": ""});
+    this.sendResponse(payload);
+  },
+
   showOverlay: function(text) {
     var dialogText = $("#dialogText");
     var overlay = $("#overlay");
@@ -113,11 +118,13 @@ Client.prototype = {
     dialogResponse.className = "hidden";
     this.showOverlay(text);
     var ok = $("#ok");
-    var payload = JSON.stringify({"instruct": null});
+    var payload = JSON.stringify({"instruct": ""});
     ok.onclick = this.sendResponse(payload);
   },
 
   connect: function() {
+    var cancel = $("#cancel");
+    cancel.onclick = function() {this.cancelPrompt()}.bind(this);
     this.ws = new WebSocket("ws://" + this.addr + "/tests");
     this.ws.onopen = function(e) { console.log("opened"); }.bind(this);
     this.ws.onclose = function(e) { console.log("closed"); }.bind(this);

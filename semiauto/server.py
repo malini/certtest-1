@@ -19,7 +19,6 @@ static_dir = os.path.join(os.path.dirname(__file__), "static")
 timeout = 3
 logger = logging.getLogger(__name__)
 
-
 def static_path(path):
     return os.path.join(static_dir, path)
 
@@ -70,12 +69,13 @@ class FrontendServer(object):
 class ResponseHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, payload):
         message = json.loads(payload)
+        global test_callback
         logger.info("Received %s" % payload)
 
-        if message.get("prompt", None):
-            global test_callback
+        if "prompt" in message:
             test_callback(message["prompt"])
-
+        elif "cancelPrompt" in message:
+            test_callback(False)
 
 def serialize_suite(tests):
     """Serialize a ``unittest.TestSuite`` instance for transportation
