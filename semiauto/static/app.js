@@ -8,6 +8,11 @@ function $(selector) {
   return els.length > 1 ? els : els[0];
 };
 
+HTMLElement.prototype.addClass = function(newClass) {
+  var oldClasses = this.className;
+  this.className = String(this.className + " " + newClass).trim();
+};
+
 // Represents tests in a table in the document.
 function TestListView(el, tests) {
   this.el = el;
@@ -25,12 +30,13 @@ TestListView.prototype = {
       var resultNode = rowNode.insertCell(1);
       descriptionNode.innerHTML = test.description;
       resultNode.id = test.id + "result";
+      resultNode.addClass("result");
       resultNode.innerHTML = "";
     }
   },
 
   setTestState: function(test_id, className) {
-    document.getElementById(test_id).className = " " + className;
+    document.getElementById(test_id).className = className;
   },
 
   updateTest: function(data) {

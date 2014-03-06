@@ -31,7 +31,7 @@ class FrontendServer(object):
             [(r"/tests", TestHandler),
              (r"/resp", ResponseHandler),
              (r"/", web.RedirectHandler, {"url": "/app.html"}),
-             (r"/(.*[html|css|js|png])$", web.StaticFileHandler,
+             (r"/(.*[html|css|js|png|woff])$", web.StaticFileHandler,
               {"path": static_dir})])
         self.server = tornado.httpserver.HTTPServer(self.routes)
         self.instance = None

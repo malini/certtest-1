@@ -1,32 +1,88 @@
-body {
-  background: white;
-  font-family: "Open Sans","Helvetica Neue", "Arial", "Helvetica", sans-serif;
-  font-size: 14px;
-  color: #50555B;
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/OpenSans-Regular-webfont.woff") format("woff");
 }
 
-h1 {
-  text-align: center;
+@font-face {
+  font-family: "Open Sans Light";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/OpenSans-Light-webfont.woff") format("woff");
 }
+
+* { margin: 0; padding: 0; }
+
+body {
+  background: url('bg-gradient-sand.png') repeat-x scroll 0px 0px, url('bg-sand.png') repeat scroll 0px 0px, none repeat scroll 0% 0% #F5F1E8;
+  font-family: "Open Sans", "Droid Arabic Naskh", "Mplus Fulah", sans-serif;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+  border-top: 3px solid white;
+}
+
+#tabzilla {
+  background-image: url("tabzilla.png");
+  float: right;
+  display: block;
+  height: 42px;
+  width: 150px;
+  position: relative;
+  text-indent: -2000px;
+  overflow: hidden;
+}
+
+#wrapper {
+  clear: both;
+  margin-top: 2em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Open Sans Light", "Droid Arabic Naskh", "Mplus Fulah Light", sans-serif;
+  font-weight: normal;
+  margin: 0 0 12px;
+  line-height: 100%;
+  text-shadow: 0 1px 0 rgba(255,255,255,.75);
+  color: #484848;
+}
+
+h1 { font-size: 48px; letter-spacing: -2px; text-align: center; margin: 0 10px 40px; }
+h2 { font-size: 32px; letter-spacing: -1px; }
+h3 { font-size: 28px; letter-spacing: -.5px; }
+h4 { font-size: 24px; letter-spacing: -.25px; }
+h5 { font-size: 16px; }
+h6 { font-size: 14px; }
+
+p, ul, ol, dl, hgroup { margin: 0 0 20px; }
 
 table {
   margin: 0 auto;
-  border-collapse:collapse;
-  color: black;
+  border-collapse: collapse;
   width: 80%;
 }
 
 th {
-  font-size: 20px;
-  color: #50555B;
+  border-top: 0;
+  font-size: 16px;
+  font-family: "Open Sans light", "Droid Arabic Naskh", "Mplus Fulah Light", sans-serif;
+  font-weight: normal;
+  padding: .8em 1em;
 }
 
 td {
-  text-align: center;
-  height:50px;
-  padding: 0.5% 2%;
-  width:50%;
+  height: 50px;
+  padding: .5em 1.8em;
+  border-top: 1px solid rgba(0,0,0,.2);
+  min-width: 70%;
 }
+
+td.result {
+  text-transform: upper-case;
+  width: 25%;
+}
+
 tr.start {
   background-color: yellow;
 }
