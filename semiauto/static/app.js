@@ -2,16 +2,22 @@
 
 const SERVER_ADDR = window.location.host;
 
+// Shorthand for document.querySelectorAll that returns one element
+// for NodeLists of length == 1, or a NodeList.
 function $(selector) {
   var els = document.querySelectorAll(String(selector));
   return els.length > 1 ? els : els[0];
 };
 
+// Extension of HTMLElement's prototype to allow adding a single CSS
+// class to its @class attribute.
 HTMLElement.prototype.addClass = function(newClass) {
   var oldClasses = this.className;
   this.className = String(this.className + " " + newClass).trim();
 };
 
+// Extension of HTMLElement's prototype to allow removing a single CSS
+// class from its @class attribute.
 HTMLElement.prototype.removeClass = function(toRemove) {
   var oldClasses = this.className.split(" ");
   var newClasses = "";
