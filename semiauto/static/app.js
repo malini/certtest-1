@@ -87,19 +87,19 @@ Client.prototype = {
     };
   },
 
-  sendUserData: function() { 
-    var dialogResponse = $("#dialogResponse");
+  sendUserData: function() {
+    var dialogResponse = $("#dialog_response");
     var payload = JSON.stringify({"prompt": dialogResponse.value});
     this.sendResponse(payload);
   },
 
-  cancelPrompt: function() { 
+  cancelPrompt: function() {
     var payload = JSON.stringify({"cancelPrompt": ""});
     this.sendResponse(payload);
   },
 
   showOverlay: function(text) {
-    var dialogText = $("#dialogText");
+    var dialogText = $("#dialog_text");
     var overlay = $("#overlay");
     dialogText.innerHTML = text;
     overlay.className = "overlay"; //remove 'hidden'
@@ -108,16 +108,16 @@ Client.prototype = {
   promptUser: function(text) {
     this.showOverlay(text);
     var ok = $("#ok");
-    ok.onclick = function() {this.sendUserData()}.bind(this);
+    ok.onclick = function() { this.sendUserData(); }.bind(this);
   },
 
   instructUser: function(text) {
-    var dialogResponse = $("#dialogResponse");
+    var dialogResponse = $("#dialog_response");
     dialogResponse.className = "hidden";
     this.showOverlay(text);
     var ok = $("#ok");
     var payload = JSON.stringify({"instructPromptOk": ""});
-    ok.onclick = function() {this.sendResponse(payload)}.bind(this);
+    ok.onclick = function() { this.sendResponse(payload); }.bind(this);
   },
 
   connect: function() {
