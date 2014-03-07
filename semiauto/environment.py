@@ -1,5 +1,6 @@
 import logging
 import ConfigParser
+import os
 
 from server import FrontendServer
 
@@ -60,6 +61,7 @@ class InProcessTestEnvironment(object):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     env = InProcessTestEnvironment()
+    os.environ["ASYNC_TEST_TIMEOUT"] = "600"
     env.start()
     print("Listening on %s" % ":".join(str(i) for i in env.server.addr))
     while env.is_alive():
