@@ -39,6 +39,7 @@ class FrontendServer(object):
     def start(self):
         assert self.instance is None
         self.server.listen(self.addr[1])
+        tornado.ioloop.IOLoop.instance().start()
         self.instance = threading.Thread(target=self._loop)
         self.instance.daemon = True
         self.instance.start()
@@ -61,9 +62,7 @@ class FrontendServer(object):
         return False
 
     def _loop(self):
-        tornado.ioloop.IOLoop.instance().start()
-        while not self.shutdown_event.is_set():
-            pass
+        return self.shutdown_event.wait()
 
 
 class ResponseHandler(tornado.websocket.WebSocketHandler):
