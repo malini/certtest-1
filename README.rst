@@ -6,6 +6,16 @@ Tests to verify the functionality and characteristics of Firefox OS
 devices, including a test harness that allows a human to dynamically
 add input whilst running the tests.
 
+The testsuite is designed to run on unprivileged devices and does not
+rely on high level instrumentation.  Instead human interaction is
+needed throughout the testsuite to perform various instructions in
+order to assert that conditions are met on the device.
+
+Running the test suite will open a tab in your web browser that will
+show the progress of test suite as it's running and occasionally ask
+you to interact with the device in certain ways.  The tests will then
+assert that the expections are met.
+
 Requirements
 ============
 
@@ -41,8 +51,9 @@ Next, hold down the *Home* button, and close the *Settings* app (press
 the x).  Finally, launch *Settings* again, and navigate to
 *Developer*, then select *ADB only* in *Remote Debugging*.
 
-Once this is done, go to Settings->Display and set the 'Screen Timeout' to
-'never'. You need this because adb will not work when the device is locked.
+Once this is done, go to Settings → Display and set the *Screen
+Timeout* to *Never*. You need this because adb is will be disabled
+when the device is locked.
 
 Environment Setup
 =================
