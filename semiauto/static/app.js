@@ -12,6 +12,17 @@ HTMLElement.prototype.addClass = function(newClass) {
   this.className = String(this.className + " " + newClass).trim();
 };
 
+HTMLElement.prototype.removeClass = function(toRemove) {
+  var oldClasses = this.className.split(" ");
+  var newClasses = "";
+  oldClasses.map(function(klass) {
+    if (klass == toRemove)
+      return;
+    newClasses += klass + " ";
+  });
+  this.className = newClasses.trim();
+};
+
 // Represents tests in a table in the document.
 function TestListView(el, tests) {
   this.el = el;
@@ -102,7 +113,7 @@ Client.prototype = {
     var dialogText = $("#dialog_text");
     var overlay = $("#overlay");
     dialogText.innerHTML = text;
-    overlay.className = "overlay"; //remove 'hidden'
+    overlay.removeClass("hidden");
   },
 
   promptUser: function(text) {
